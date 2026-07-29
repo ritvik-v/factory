@@ -1,6 +1,6 @@
 # factory
 
-A software factory with the ceremony removed. Four commands, three files, ~530
+A software factory with the ceremony removed. Four commands, three files, ~580
 lines of plain markdown end to end. Works with any coding agent that can read
 files, run commands, and follow a multi-step instruction.
 
@@ -70,13 +70,15 @@ because a repeated angle finds nothing.
 Three failures parks a slice, three parked slices stops the run, and two passes
 with neither a newly verified slice nor a newly killed approach exits `stalled`.
 Every run ends as exactly one of `complete`, `blocked`, `stalled`, `limited`,
-`failed`.
+`failed`. **Both loops are bounded** — review caps at three rounds, and after the
+first only shipping-blockers send work back, so a growing contract can't outrun a
+fixed build budget.
 
 ## The append-only contract
 
 The one rule worth understanding before you use this:
 
-- `factory-judge` may **add** criteria. Nothing may **edit or delete** one.
+- `factory-judge` may **add** criteria. **No agent** may edit or delete one.
 - Appended criteria carry provenance — which review round found it, which slice's
   "passing" work exposed it.
 - They're permanent. They run every pass from then on. They are regression tests.
@@ -84,6 +86,10 @@ The one rule worth understanding before you use this:
   builder more attempts.
 - Weakening a criterion to make work pass is the one forbidden move. A build that
   can't meet a criterion **parks the slice** and says why.
+- **You own the contract.** A criterion that's simply wrong can be amended or
+  retired with a dated note — which re-opens gate 1 for a fresh approval. The
+  judge's tamper audit checks for that note, so the anti-goalpost-moving property
+  survives; the rule binds the agents, not you.
 
 The useful side effect: **where appended criteria cluster tells you which stage
 failed.** Several appends in one area means `factory-sharpen` under-specified
@@ -100,8 +106,10 @@ projects. This one is built for one person, so it doesn't pay that tax. A
 200-line contract is followed worse than a 25-line one even when the extra lines
 are all true.
 
-It also doesn't write your tests for you, replace reading the diff, or make an
-unattended run safe to point at production.
+It also doesn't design your test strategy, replace reading the diff, or make an
+unattended run safe to point at production. It does require that every `[t1]`
+criterion gets an automated encoding during the slice that claims it — otherwise
+"verified" means an agent looked at the screen and liked what it saw.
 
 ## Prior art
 
@@ -111,8 +119,9 @@ Built by reading seven approaches and keeping only what was load-bearing:
   — the closest ancestor: staged factory, tests before code, fresh-eyes review,
   circuit breakers.
 - [simoncorry/foundry](https://github.com/simoncorry/foundry) — declared review
-  angles (its bug-catch curve ran 4, 0, 4, 3, 1 — the round that repeated an
-  angle found zero), the deviation log, the flow guarantee.
+  angles (in the project it grew out of, a five-round chain's bug-catch curve ran
+  4, 0, 4, 3, 1 — the round that repeated an angle found zero), the deviation
+  log, the flow guarantee.
 - [ryanthedev/code-foundations](https://github.com/ryanthedev/code-foundations)
   — gate failure protocol, retry caps, adaptive questioning.
 - [obra/superpowers](https://github.com/obra/superpowers) — the ledger that

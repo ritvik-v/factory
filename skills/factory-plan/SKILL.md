@@ -76,4 +76,5 @@ name any AC no slice claims>
    after each, which are risky and why, and any criterion nothing covers.
 2. Get an explicit yes. **This is human gate 2 — the last one before the loop
    runs.** On yes, flip `status: draft` → `status: approved`.
-3. Say that `factory-build` is next. **Do not start building.** Stop.
+3. Create `factory/STATE.md` from the template if it doesn't exist.
+4. Say that `factory-build` is next. **Do not start building.** Stop.

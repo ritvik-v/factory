@@ -34,12 +34,17 @@ Each pass:
 
 1. **GATHER** — read STATE.md and PLAN.md. Pick the first slice that is
    unfinished, unparked, and unblocked.
-2. **ACT** — implement that one slice. Only that slice.
+2. **ACT** — implement that one slice. Only that slice. **Encode every `[t1]`
+   criterion the slice claims as an automated check** — a test, a script, or a
+   command with its expected output written down — as part of the same slice.
+   Name the encoding next to the criterion ID in STATE.md.
 3. **VERIFY** — run every `[t1]` criterion the slice claims, plus every appended
    criterion in SPEC.md, plus the full suite. At slice boundaries also run `[t2]`
-   with its gate set. Record PASS / FAIL / UNVERIFIED per criterion **with the
-   command you ran and what it printed.** A criterion you did not run is
-   UNVERIFIED, never PASS.
+   with its gate set. **A criterion's evidence is its check's output** — the
+   command and what it printed. Record PASS / FAIL / UNVERIFIED per criterion.
+   A criterion you did not run is UNVERIFIED, never PASS; a criterion with no
+   runnable encoding is UNVERIFIED by definition, because nothing about it can
+   be run.
 4. **CHECK** — before marking a slice verified, confirm the observable behavior
    directly: run the thing, hit the endpoint, load the page. If your agent can
    spawn subagents, spawn a fresh one with only the criteria and the diff, told
@@ -61,8 +66,10 @@ code forced, what you chose, and the one-line lesson. Cite file locations.
 the code no plan review ever saw.
 
 If you hit a genuine ambiguity the contract doesn't answer, **park the slice with
-the question written down** and move to the next unblocked one. Parked questions
-get answered by the human afterwards. Never guess silently. Never block.
+the question written down** — phrased so a human can answer it cold — and move to
+the next unblocked one. `factory-judge` puts those questions to the human at
+close-out, and the answers land in SPEC.md's `## Decisions` before the next run.
+Never guess silently. Never block.
 
 ## Forbidden
 

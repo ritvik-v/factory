@@ -18,8 +18,13 @@ reasons, and the exact commands a human can run to see it work>
 | T1 | pending / in progress / verified / parked | 0 | | |
 
 ## Verdicts
-<per criterion, per slice: PASS / FAIL / UNVERIFIED, with the command run
-and what it printed. A criterion not run is UNVERIFIED, never PASS.>
+<per criterion, per slice: the check that encodes it, then PASS / FAIL /
+UNVERIFIED with the command run and what it printed. A criterion not run is
+UNVERIFIED, never PASS; a criterion with no encoding cannot be run at all.
+
+ - AC-1 · encoded by: tests/import.spec.ts "skips malformed rows"
+   PASS — `npm test -- import` → 14 passing>
+
 
 ## Deviations
 <one entry per departure from the plan:

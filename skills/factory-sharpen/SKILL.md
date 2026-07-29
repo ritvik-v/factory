@@ -115,5 +115,8 @@ the loop is not allowed to reinterpret>
 
 1. Read the spec back in 3–4 sentences and get an explicit yes. **This is human
    gate 1.** On yes, flip `status: draft` → `status: approved`.
-2. Create `factory/STATE.md` from the template if it doesn't exist.
-3. Say that `factory-plan` is next. **Do not plan. Do not write code.** Stop.
+2. Say that `factory-plan` is next. **Do not plan. Do not write code.** Stop.
+
+If you were re-run because the human amended a criterion (AGENTS.md rule 6),
+confirm the dated note is under `## Decisions`, then take the spec through gate 1
+again. Amending is the human's move; never make it on your own initiative.

@@ -27,7 +27,10 @@ Ground rules: `AGENTS.md`.
 2. **Audit the contract for tampering.** Diff SPEC.md's `## Acceptance criteria`
    block against git history. **Any criterion edited, deleted, weakened, or
    reinterpreted is a top-severity finding**, ahead of every bug. Growth under
-   `## Appended` is legal; change to an original never is.
+   `## Appended` is legal. A change to an original is legal only if a dated human
+   amendment note under `## Decisions` names that criterion and the reason
+   (AGENTS.md rule 6) — check for it. No note means an agent moved the
+   goalposts, and that outranks every other finding in the report.
 
 3. **Read `## Deviations` first.** Every entry is a place the build left the
    approved plan, which makes it the least-reviewed code in the diff. Treat each
@@ -37,6 +40,10 @@ Ground rules: `AGENTS.md`.
    full suite. Never trust a green checkmark in STATE.md — trust output you
    produced in this session. **Run the suite twice.** A test that passes once and
    fails once is a finding; flaky greens are how broken work ships.
+
+   **A criterion the build marked PASS with no runnable encoding is UNVERIFIED,
+   and the missing encoding is itself a finding** — the build asserted rather
+   than proved it, and nothing stops the next run from asserting it again.
 
 5. **Try to break it, from two declared angles.** State each angle at the top of
    its pass, and the second must genuinely differ from the first. A repeated
@@ -77,6 +84,22 @@ Provenance is required (which judge round, which slice exposed it). Appended
 criteria are permanent and run every pass from then on. **An append never resets
 a circuit breaker** — discovering work does not buy the builder more attempts.
 
+## Review rounds are bounded
+
+The build loop has circuit breakers; this loop needs them too, or the contract
+grows forever against a builder whose budget doesn't.
+
+- **Round 1** — any finding of severity `blocks shipping` or `should fix` sends
+  the work back to `factory-build`.
+- **Round 2 and after** — only `blocks shipping` findings send it back.
+  `should fix` items still append to the contract and still get reported; they
+  no longer prevent SHIP. The contract keeps them for the next run.
+- **Cap: 3 rounds.** At round 3, report the verdict, list what's outstanding,
+  and stop calling for another build. Three fresh-eyes passes that still can't
+  clear it is a signal about the spec, not a reason for a fourth.
+
+Count rounds from the `factory/REVIEW-*.md` files already on disk.
+
 ## Output: `factory/REVIEW-<n>.md`
 
 ```markdown
@@ -116,10 +139,17 @@ with a real second angle before reporting.
 
 ## Close out
 
-- **NOT DONE / FIX FIRST** → the appended criteria *are* the fix list. Tell the
-  human to start a fresh session and run `factory-build`; the loop picks up the
-  parked and failed slices against the grown contract.
-- **SHIP** → say so plainly, name anything cosmetic left behind, and stop.
+- **NOT DONE / FIX FIRST** → the appended criteria *are* the fix list. First,
+  **put the parked questions to the human** — every question `factory-build` wrote
+  into STATE.md, each with your recommendation, answered before the next run.
+  Write the answers into SPEC.md's `## Decisions` and unpark what they unblock;
+  a question carried into a second build run blocks the same slice again. Then
+  tell the human to start a fresh session and run `factory-build`.
+- **SHIP** → say so plainly, name anything cosmetic or `should fix` left behind
+  and where it lives on the contract, and stop.
+- **Round 3, still not clear** → report where it stands, say plainly that three
+  independent passes haven't cleared it, and hand the decision to the human. Do
+  not call for a fourth round.
 
 Walk the human through it verdict first, in plain language. Every finding carries
 its proof. **This skill never reports vibes.**
